@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maharaja Optical - Lens Details</title>
+    
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --header-bg: #f8f9fa;
+            --nav-active: #007bff;
+            --card-bg: #ffffff;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --header-bg: #2d2d2d;
+            --nav-active: #0d6efd;
+            --card-bg: #2d2d2d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        filter: invert(100%);
+        transition: filter 0.3s ease;
+        }
+
+        .dark-mode .logo {
+        filter: invert(0%);
+        }
+
+        .company-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-button {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button.active {
+            background-color: var(--nav-active);
+            color: white;
+            margin-left: 20px;
+        }
+
+        #darkModeToggle {
+            padding: 0.5rem 1rem;
+            background: var(--nav-active);
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .content-section {
+            display: none;
+            padding: 2rem;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Image Grid Layout */
+        .image-container {
+            display: grid;
+            gap: 2rem;
+            padding: 0rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .details-btn {
+        transition: background-color 0.3s ease;
+        }
+
+        /* Optional: Add hover effect for better UX */
+        .details-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Mobile (default): 1 image per row */
+        @media (max-width: 767px) {
+            #overview .image-container,
+            #types .image-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tablet: 2 images per row */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            #overview .image-container,
+            #types .image-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Laptop: 4 images for #overview, 3 for #types */
+        @media (min-width: 1024px) {
+            #overview .image-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            #types .image-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .image-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .lens-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .lens-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card-content {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .details-btn {
+            background: var(--nav-active);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .details-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* Details Section */
+        .details-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .performance-bar {
+            height: 25px;
+            background: #e9ecef;
+            border-radius: 15px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #00bfff);
+            width: 0;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .performance-fill::after {
+            content: attr(data-percent);
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .company-name {
+                font-size: 1.2rem;
+            }
+
+            nav {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            #darkModeToggle {
+                margin-left: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="C:\Users\DanyalAkhtarSiddiqui\Downloads\maharaja-logo-white.png" class="logo" alt="Maharaja Optical Logo">
+            <h1 class="company-name">Maharaja Optical</h1>
+        </div>
+        <nav>
+            <button class="nav-button active" data-content="overview">Progressive Lens</button>
+            <button class="nav-button" data-content="types">Types</button>
+        </nav>
+        <button id="darkModeToggle">🌓 Dark Mode</button>
+    </header>
+
+    <!-- Progressive Lens Overview -->
+    <section id="overview" class="content-section active">
+        <div class="image-container">
+            <div class="image-card">
+                <img src="standard_progressive_lens_img.JPG" class="lens-image" alt="Standard Lens">
+                <div class="card-content">
+                    <h3>Standard Progressive Lens</h3>
+                    <button class="details-btn" data-lens="standard">View Details</button>
+                </div>
+            </div>
+            <div class="image-card">
+                <img src="premium_progressive_lens_img.JPG" class="lens-image" alt="Premium Lens">
+                <div class="card-content">
+                    <h3>Premium Progressive Lens</h3>
+                    <button class="details-btn" data-lens="premium">View Details</button>
+                </div>
+            </div>
+            <div class="image-card">
+                <img src="premium_progressive_lens_img.JPG" class="lens-image" alt="Ultra Premium Lens">
+                <div class="card-content">
+                    <h3>Ultra Progressive Lens</h3>
+                    <button class="details-btn" data-lens="premium">View Details</button>
+                </div>
+            </div>
+            <div class="image-card">
+                <img src="premium_progressive_lens_img.JPG" class="lens-image" alt="Elite Premium Lens">
+                <div class="card-content">
+                    <h3>Elite Progressive Lens</h3>
+                    <button class="details-btn" data-lens="premium">View Details</button>
+                </div>
+            </div>
+        </div>
+        <div class="details-content" id="lensDetails"></div>
+    </section>
+
+    <!-- Type of Progressive Lens -->
+    <section id="types" class="content-section">
+        <div class="image-container">
+            <div class="image-card">
+                <img src="zones of progressive.png" class="lens-image" alt="Digital Progressive">
+                <div class="card-content">
+                    <h3>Digital Progressive Lens</h3>
+                </div>
+            </div>
+            <div class="image-card">
+                <img src="spex_progress.jpg" class="lens-image" alt="Occupational Progressive">
+                <div class="card-content">
+                    <h3>Occupational Progressive</h3>
+                </div>
+            </div>
+            <div class="image-card">
+                <img src="type_progress.jpg" class="lens-image" alt="Short Corridor">
+                <div class="card-content">
+                    <h3>Short Corridor Progressive</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox (Moved Outside Sections) -->
+    <div class="lightbox">
+        <button class="close-btn">×</button>
+        <div class="lightbox-content">
+            <img class="lightbox-img" src="" alt="Enlarged view">
+        </div>
+    </div>
+
+    <script>
+        // Lightbox Functionality
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxImg = document.querySelector('.lightbox-img');
+        const closeBtn = document.querySelector('.close-btn');
+
+        document.querySelectorAll('.lens-image').forEach(img => {
+            img.addEventListener('click', () => {
+                lightbox.classList.add('active');
+                lightboxImg.src = img.src;
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+
+        // Lens Details Data
+        const lensData = {
+            standard: {
+                name: 'Standard Progressive Lens',
+                benefits: [
+                    'Affordable option',
+                    'General purpose use',
+                    'Basic UV protection',
+                    'Standard clarity'
+                ],
+                performance: {
+                    distance: 70,
+                    intermediate: 60,
+                    reading: 75,
+                    constant: 65
+                }
+            },
+            premium: {
+                name: 'Premium Progressive Lens',
+                benefits: [
+                    'Wider reading area',
+                    'Enhanced clarity',
+                    'Anti-glare coating',
+                    'UV400 protection',
+                    'Premium materials'
+                ],
+                performance: {
+                    distance: 90,
+                    intermediate: 85,
+                    reading: 95,
+                    constant: 90
+                }
+            }
+        };
+
+        // View Details Button Handler
+      // Add this variable at the top of your script section
+        let activeDetailsButton = null;
+
+        // Replace the existing details button click handler with this
+        document.querySelectorAll('.details-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lensType = this.dataset.lens;
+                const data = lensData[lensType];
+                
+                if (activeDetailsButton === this) {
+                    // Hide details if clicking the same button
+                    document.getElementById('lensDetails').innerHTML = '';
+                    this.textContent = 'View Details';
+                    activeDetailsButton = null;
+                } else {
+                    // Reset previous button if exists
+                    if (activeDetailsButton) {
+                        activeDetailsButton.textContent = 'View Details';
+                    }
+                    
+                    // Show new details
+                    const detailsHtml = `
+                        <h2>${data.name}</h2>
+                        <div class="benefits-section">
+                            <h4>Benefits:</h4>
+                            <ul>${data.benefits.map(benefit => `<li>${benefit}</li>`).join('')}</ul>
+                        </div>
+                        <div class="performance-section">
+                            <h4>Performance:</h4>
+                            ${Object.entries(data.performance).map(([key, value]) => `
+                                <div class="performance">
+                                    <div class="performance-label">${key.charAt(0).toUpperCase() + key.slice(1)}</div>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill" data-percent="${value}%" style="width: ${value}%"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    
+                    document.getElementById('lensDetails').innerHTML = detailsHtml;
+                    this.textContent = 'Hide Details';
+                    activeDetailsButton = this;
+                    
+                    window.scrollTo({
+                        top: document.getElementById('lensDetails').offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Navigation Handling
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const contentId = button.dataset.content;
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(contentId).classList.add('active');
+            });
+        });
+
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('darkModeToggle').textContent = isDark ? '☀️ Light Mode' : '🌓 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // Check for Saved Dark Mode Preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>
